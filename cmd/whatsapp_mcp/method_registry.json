@@ -1,0 +1,405 @@
+{
+  "methods": {
+    "SendMessage": {
+      "name": "SendMessage",
+      "description": "Send a text, media, or other message to a user or group. The most common operation for messaging.",
+      "category": "messaging",
+      "params": [
+        {
+          "name": "to",
+          "type": "jid",
+          "required": true,
+          "description": "Recipient JID (WhatsApp ID). Can be just phone number (e.g., '61487543210') and @s.whatsapp.net will be added automatically. For groups, use full JID ending in @g.us",
+          "example": "61487543210",
+          "notes": "Phone numbers are auto-formatted to JIDs"
+        },
+        {
+          "name": "message",
+          "type": "proto:waE2E.Message",
+          "required": true,
+          "description": "Message content. For text messages, use {\"conversation\": \"text\"}. For media, use appropriate message type (imageMessage, videoMessage, etc.)",
+          "example": {
+            "conversation": "Hello from AI!"
+          },
+          "notes": "See message_templates for different message types"
+        }
+      ],
+      "returns": {
+        "message_id": "string",
+        "timestamp": "int64",
+        "status": "string"
+      },
+      "example": {
+        "operation": "call_whatsmeow",
+        "method": "SendMessage",
+        "params": {
+          "to": "61487543210",
+          "message": {
+            "conversation": "Hello from AI!"
+          }
+        }
+      },
+      "notes": "This is the primary messaging operation. Returns message ID that can be used for tracking, replies, reactions, etc."
+    },
+    "SendPresence": {
+      "name": "SendPresence",
+      "description": "Update your online/offline status globally",
+      "category": "presence",
+      "params": [
+        {
+          "name": "state",
+          "type": "presence",
+          "required": true,
+          "description": "Presence state: 'available' (online) or 'unavailable' (offline)",
+          "example": "available",
+          "enum": ["available", "unavailable"]
+        }
+      ],
+      "returns": {},
+      "example": {
+        "operation": "call_whatsmeow",
+        "method": "SendPresence",
+        "params": {
+          "state": "available"
+        }
+      }
+    },
+    "SendChatPresence": {
+      "name": "SendChatPresence",
+      "description": "Send typing/recording indicator to a specific chat",
+      "category": "presence",
+      "params": [
+        {
+          "name": "jid",
+          "type": "jid",
+          "required": true,
+          "description": "Chat JID to send presence to",
+          "example": "61487543210"
+        },
+        {
+          "name": "state",
+          "type": "chatpresence",
+          "required": true,
+          "description": "Chat presence state",
+          "example": "composing",
+          "enum": ["composing", "paused"]
+        },
+        {
+          "name": "media",
+          "type": "chatpresencemedia",
+          "required": false,
+          "description": "Media type being composed",
+          "example": "text",
+          "enum": ["text", "audio"]
+        }
+      ],
+      "returns": {},
+      "example": {
+        "operation": "call_whatsmeow",
+        "method": "SendChatPresence",
+        "params": {
+          "jid": "61487543210",
+          "state": "composing",
+          "media": "text"
+        }
+      },
+      "notes": "Use 'composing' to show typing indicator, 'paused' to stop it"
+    },
+    "MarkRead": {
+      "name": "MarkRead",
+      "description": "Mark messages as read in a chat",
+      "category": "messaging",
+      "params": [
+        {
+          "name": "chat",
+          "type": "jid",
+          "required": true,
+          "description": "Chat JID",
+          "example": "61487543210"
+        },
+        {
+          "name": "sender",
+          "type": "jid",
+          "required": true,
+          "description": "Sender JID (same as chat for 1-1, or specific sender for groups)",
+          "example": "61487543210"
+        },
+        {
+          "name": "ids",
+          "type": "[]string",
+          "required": true,
+          "description": "Array of message IDs to mark as read",
+          "example": ["3EB0ABC123", "3EB0DEF456"]
+        },
+        {
+          "name": "timestamp",
+          "type": "time",
+          "required": true,
+          "description": "Timestamp of the messages (ISO8601 format)",
+          "example": "2025-11-10T12:34:56Z"
+        }
+      ],
+      "returns": {},
+      "example": {
+        "operation": "call_whatsmeow",
+        "method": "MarkRead",
+        "params": {
+          "chat": "61487543210",
+          "sender": "61487543210",
+          "ids": ["3EB0ABC123"],
+          "timestamp": "2025-11-10T12:34:56Z"
+        }
+      }
+    },
+    "GetUserInfo": {
+      "name": "GetUserInfo",
+      "description": "Get profile information for one or more users",
+      "category": "contacts",
+      "params": [
+        {
+          "name": "jids",
+          "type": "[]jid",
+          "required": true,
+          "description": "Array of user JIDs to get info for",
+          "example": ["61487543210", "61414505452"]
+        }
+      ],
+      "returns": {
+        "users": "map[JID]UserInfo"
+      },
+      "example": {
+        "operation": "call_whatsmeow",
+        "method": "GetUserInfo",
+        "params": {
+          "jids": ["61487543210"]
+        }
+      },
+      "notes": "Returns verified name, status, and other profile info"
+    },
+    "GetProfilePictureInfo": {
+      "name": "GetProfilePictureInfo",
+      "description": "Get profile picture URL and metadata for a user or group",
+      "category": "contacts",
+      "params": [
+        {
+          "name": "jid",
+          "type": "jid",
+          "required": true,
+          "description": "User or group JID",
+          "example": "61487543210"
+        },
+        {
+          "name": "params",
+          "type": "object",
+          "required": false,
+          "description": "Optional parameters (ExistingID, Preview)",
+          "example": {}
+        }
+      ],
+      "returns": {
+        "url": "string",
+        "id": "string",
+        "type": "string",
+        "direct_path": "string"
+      },
+      "example": {
+        "operation": "call_whatsmeow",
+        "method": "GetProfilePictureInfo",
+        "params": {
+          "jid": "61487543210",
+          "params": {}
+        }
+      }
+    },
+    "DownloadMediaWithPath": {
+      "name": "DownloadMediaWithPath",
+      "description": "Download media from a message and save to a file",
+      "category": "media",
+      "params": [
+        {
+          "name": "downloadable",
+          "type": "interface",
+          "required": true,
+          "description": "Downloadable media from message (ImageMessage, VideoMessage, etc.)",
+          "example": {},
+          "notes": "Extract from message.ImageMessage, message.VideoMessage, etc."
+        },
+        {
+          "name": "path",
+          "type": "string",
+          "required": true,
+          "description": "File path to save the media",
+          "example": "C:\\Users\\cnd\\Downloads\\media\\image.jpg"
+        },
+        {
+          "name": "create_folder",
+          "type": "bool",
+          "required": false,
+          "description": "Create parent folders if they don't exist",
+          "example": true
+        }
+      ],
+      "returns": {},
+      "example": {
+        "operation": "call_whatsmeow",
+        "method": "DownloadMediaWithPath",
+        "params": {
+          "downloadable": {},
+          "path": "C:\\Users\\cnd\\Downloads\\media\\image.jpg",
+          "create_folder": true
+        }
+      },
+      "notes": "Complex: requires extracting media info from received message first"
+    },
+    "BuildEdit": {
+      "name": "BuildEdit",
+      "description": "Build a message edit (use with SendMessage to edit a previous message)",
+      "category": "messaging",
+      "params": [
+        {
+          "name": "chat",
+          "type": "jid",
+          "required": true,
+          "description": "Chat JID where message was sent",
+          "example": "61487543210"
+        },
+        {
+          "name": "messageID",
+          "type": "string",
+          "required": true,
+          "description": "ID of message to edit",
+          "example": "3EB0ABC123"
+        },
+        {
+          "name": "newMessage",
+          "type": "proto:waE2E.Message",
+          "required": true,
+          "description": "New message content",
+          "example": {
+            "conversation": "Corrected text"
+          }
+        }
+      ],
+      "returns": {
+        "message": "proto:waE2E.Message"
+      },
+      "example": {
+        "operation": "call_whatsmeow",
+        "method": "BuildEdit",
+        "params": {
+          "chat": "61487543210",
+          "messageID": "3EB0ABC123",
+          "newMessage": {
+            "conversation": "Corrected text"
+          }
+        }
+      },
+      "notes": "Returns an edit message that should be sent with SendMessage"
+    },
+    "BuildRevoke": {
+      "name": "BuildRevoke",
+      "description": "Build a message revoke/delete (use with SendMessage to delete a message)",
+      "category": "messaging",
+      "params": [
+        {
+          "name": "chat",
+          "type": "jid",
+          "required": true,
+          "description": "Chat JID where message was sent",
+          "example": "61487543210"
+        },
+        {
+          "name": "senderJID",
+          "type": "jid",
+          "required": true,
+          "description": "JID of message sender",
+          "example": "61414505452"
+        },
+        {
+          "name": "messageID",
+          "type": "string",
+          "required": true,
+          "description": "ID of message to delete",
+          "example": "3EB0ABC123"
+        }
+      ],
+      "returns": {
+        "message": "proto:waE2E.Message"
+      },
+      "example": {
+        "operation": "call_whatsmeow",
+        "method": "BuildRevoke",
+        "params": {
+          "chat": "61487543210",
+          "senderJID": "61414505452",
+          "messageID": "3EB0ABC123"
+        }
+      },
+      "notes": "Returns a revoke message that should be sent with SendMessage"
+    }
+  },
+  "message_templates": {
+    "text": {
+      "description": "Simple text message",
+      "example": {
+        "conversation": "Hello, this is a text message!"
+      }
+    },
+    "text_with_mentions": {
+      "description": "Text message with @mentions",
+      "example": {
+        "extendedTextMessage": {
+          "text": "Hello @61487543210, how are you?",
+          "contextInfo": {
+            "mentionedJid": ["61487543210@s.whatsapp.net"]
+          }
+        }
+      }
+    },
+    "reply": {
+      "description": "Reply to a message",
+      "example": {
+        "extendedTextMessage": {
+          "text": "Thanks for your message!",
+          "contextInfo": {
+            "stanzaId": "3EB0ABC123",
+            "participant": "61487543210@s.whatsapp.net",
+            "quotedMessage": {}
+          }
+        }
+      }
+    },
+    "reaction": {
+      "description": "React to a message with an emoji",
+      "example": {
+        "reactionMessage": {
+          "key": {
+            "remoteJid": "61487543210@s.whatsapp.net",
+            "fromMe": false,
+            "id": "3EB0ABC123"
+          },
+          "text": "👍",
+          "senderTimestampMs": 1699999999000
+        }
+      }
+    },
+    "location": {
+      "description": "Send location",
+      "example": {
+        "locationMessage": {
+          "degreesLatitude": -33.8688,
+          "degreesLongitude": 151.2093,
+          "name": "Sydney Opera House",
+          "address": "Bennelong Point, Sydney NSW 2000, Australia"
+        }
+      }
+    }
+  },
+  "type_notes": {
+    "jid": "WhatsApp ID format. Can be phone number (61487543210) which will be auto-formatted to 61487543210@s.whatsapp.net, or full JID. Groups end in @g.us",
+    "proto:waE2E.Message": "Protobuf message. JSON will be automatically converted. See message_templates for examples",
+    "context": "Automatically provided as context.Background(). No need to specify",
+    "time": "ISO8601 format timestamp: 2025-11-10T12:34:56Z"
+  }
+}
+
